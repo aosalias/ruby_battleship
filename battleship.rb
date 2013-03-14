@@ -23,6 +23,41 @@ class Battleship
     @ships = [@player1_ships, @player2_ships]
   end
 
+  # Randomly place `ships` on board.
+  #
+  # `ships` is an array of desired lengths.
+  #
+  # Returns an array of Ship objects.
+  def place_ships(ships, board)
+    placed  = []
+    rows    = board.size
+    cols    = board.first.size
+
+    while ships.any?
+      length      = ships.first
+      orientation = rand(2) == 0 ? 'h' : 'v'
+
+      if orientation == 'h'
+        height  = 1
+        width   = length
+      else
+        height  = length
+        width   = 1
+      end
+
+      x     = rand(cols - width)
+      y     = rand(rows - height)
+      ship  = Ship.new(x, y, orientation, length)
+
+      if ship.coords.none? { |x, y| placed.map(&:coords).flatten(1).include? [x, y] }
+        placed << ship
+        ships.shift
+      end
+    end
+
+    placed
+  end
+
   def main
     while !over
       @turn += 1
